@@ -1,7 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Boldonse&family=Saira:ital,wght@0,100..900;1,100..900&display=swap");
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+  font-family: "Boldonse";
 }
 
 body {
@@ -41,7 +43,6 @@ body {
   text-align: left;
   min-height: 50px;
   font-size: 1.5em;
-  font-family: "fantasy";
 }
 
 .score {
@@ -59,7 +60,6 @@ body {
 }
 
 .startScreen {
-  font-family: "fantasy";
   font-weight: 800;
   position: absolute;
   background: rgb(165, 121, 231);
