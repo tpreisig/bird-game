@@ -4,17 +4,19 @@ const startScreen = document.querySelector(".startScreen");
 const gameArea = document.querySelector(".gameArea");
 const gameMessage = document.querySelector(".gameMessage");
 
+
+
 gameMessage.addEventListener("click", start);
 startScreen.addEventListener("click", start);
 
 document.addEventListener("keydown", pressOn);
 document.addEventListener("keyup", pressOff);
 
+
 let keys = {};
 let player = {};
 
 function start() {
-    // console.log("start");
     player.speed = 40;
     player.score = 0;
     player.inplay = true;
@@ -53,15 +55,16 @@ function buildPipes(startPos) {
     pipe1.start = startPos + totalWidth;
     pipe1.classList.add("pipe");
     pipe1.innerHTML = player.pipe;
-    pipe1.height = Math.floor(Math.random() * 350) + 100;
+    pipe1.height = Math.floor(Math.random() * 200) + 100;
     pipe1.style.height = pipe1.height + "px";
     pipe1.style.left = pipe1.start + "px";
     pipe1.style.top = "0px";
     pipe1.x = pipe1.start;
     pipe1.id = player.pipe;
+    pipe1.passed = false;
     pipe1.style.background = "darkorange";
     gameArea.appendChild(pipe1);
-    let pipeSpace = Math.floor(Math.random() * 200);
+    let pipeSpace = Math.floor(Math.random() * 100) + 100;
     let pipe2 = document.createElement("div");
     pipe2.start = pipe1.start;
     pipe2.classList.add("pipe");
@@ -71,19 +74,22 @@ function buildPipes(startPos) {
     pipe2.style.bottom = "0px";
     pipe2.x = pipe1.start;
     pipe2.id = player.pipe;
+    pipe2.passed = false;
     pipe2.style.background = "springgreen";
     gameArea.appendChild(pipe2);
 }
 
-
-
 function movePipes(bird) {
     let columns = document.querySelectorAll(".pipe");
-    let counter = 0; //counts pipes to remove
+    let counter = 0; 
     columns.forEach(function (column) {
-        console.log(column);
         column.x -= player.speed/10;
         column.style.left = column.x + "px";
+        // Check if bird passes the pipes
+        if (column.x + column.offsetWidth < player.x && !column.passed){
+            column.passed = true;
+            player.score += Math.round(Math.random()*10 + 100); // score for passing each pipe pair
+        }
         if (column.x < 0) {
             column.parentElement.removeChild(column);
             counter++;
@@ -95,9 +101,28 @@ function movePipes(bird) {
     }
 }
 
+
+function checkCollision(bird, pipe) {
+    const birdRect = bird.getBoundingClientRect();
+    const pipeRect = pipe.getBoundingClientRect();
+    return !(
+        birdRect.top > pipeRect.bottom ||
+        birdRect.bottom < pipeRect.top ||
+        birdRect.left > pipeRect.right ||
+        birdRect.right < pipeRect.left
+    );
+}
+
+
 function playGame() {
     if (player.inplay) {
         let bird = document.querySelector(".bird");
+        let pipes = document.querySelectorAll(".pipe");
+        pipes.forEach(pipe => {
+            if (checkCollision(bird, pipe)) {
+                playGameOver(bird);
+            }
+        });
         let wing = document.querySelector(".wing");
         let move = false;
 
@@ -110,11 +135,11 @@ function playGame() {
             move = true;
         }
         if ((keys.ArrowUp || keys.Space) && player.y > 40) {
-            player.y -= player.speed;
+            player.y -= player.speed/2;
             move = true;
         }
         if (keys.ArrowDown && player.y < (gameArea.offsetHeight - 60)) {
-            player.y += player.speed;
+            player.y += player.speed/2;
             move = true;
         }
         if (move) {
@@ -122,7 +147,7 @@ function playGame() {
             wing.style.top = wing.pos + "px";
         }
         // Gravity
-        player.y += (player.speed * 0.04);
+        player.y += (player.speed * 0.02);
 
         // Update position
         bird.style.top = player.y + "px";
@@ -131,25 +156,21 @@ function playGame() {
         // Move pipes and check collision
         movePipes(bird);
 
-
         // Fall off the bottom game area
         if (player.y > gameArea.offsetHeight) {
             playGameOver(bird);
         }
 
-
         window.requestAnimationFrame(playGame);
-        player.score++;
         bar.innerHTML = "Birdy Game"; 
-        score.innerText = `Score: ${player.score}`;
-        
+        score.innerText = `Score: ${player.score}`; 
     }
 }
 
 function playGameOver(bird) {
     player.inplay = false;
     gameMessage.classList.remove("hide");
-    bird.setAttribute("style", "transform: translate(500%, 200%) rotate(180deg) scale(1.5);");
+    bird.setAttribute("style", "position: absolute; top: 40vh; left: 50vw; transform: translateX(-50%) rotate(180deg) scale(1.6);");
     gameMessage.innerHTML = "Birdy scored " + player.score + " points <br>Click to start again";
 }
 

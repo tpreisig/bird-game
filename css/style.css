@@ -1,12 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=Boldonse&family=Saira:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Azeret+Mono:ital,wght@0,100..900;1,100..900&display=swap");
+
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  font-family: "Boldonse";
 }
 
 body {
+  font-family: "Azeret Mono";
   min-height: 100vh;
   width: 100vw;
   overflow: hidden;
@@ -27,7 +28,7 @@ body {
 
 .gameArea {
   background: rgba(165, 121, 231, 0.7);
-  width: 80%;
+  width: 98vw;
   min-height: 80vh;
   margin: 5vh auto;
   transition: all 1.2s ease;
@@ -42,7 +43,7 @@ body {
   color: white;
   text-align: left;
   min-height: 50px;
-  font-size: 1.5em;
+  font-size: 1.8rem;
 }
 
 .score {
@@ -55,11 +56,12 @@ body {
   color: white;
   text-align: center;
   min-height: 40px;
-  font-size: 1.5em;
-  font-family: "fantasy";
+  font-size: 1.8rem;
+  font-weight: 900;
 }
 
 .startScreen {
+  font-family: "fantasy";
   font-weight: 800;
   position: absolute;
   background: rgb(165, 121, 231);
@@ -84,7 +86,7 @@ body {
 .gameMessage {
   position: absolute;
   padding: 6px 0;
-  top: 25vh;
+  top: 5vh;
   left: 50%;
   text-align: center;
   left: 20%;
@@ -100,6 +102,7 @@ body {
 }
 
 .bird {
+  z-index: 100;
   position: absolute;
   top: 100px;
   left: 50px;
@@ -107,16 +110,16 @@ body {
   height: 96px;
   line-height: 40px;
   font-size: 1.5em;
-  background-image: url("./collibri.png");
-  background-size: cover;
+  background-image: url("../assets/hummingbird.png");
+  background-size: contain;
   background-position: center;
-  border: 1px solid plum;
+  background-repeat: no-repeat;
 }
 
 .wing {
   position: absolute;
-  top: 36px;
-  left: 4px;
+  top: 80px;
+  left: 32px;
   background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(255, 217, 0, 0.4));
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
   width: 40px;
