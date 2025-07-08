@@ -1,102 +1,153 @@
 class Game {
-  constructor() {
-    this.gameArea = document.querySelector(".gameArea");
-    this.scoreDisplay = document.querySelector(".score");
-    this.bar = document.querySelector(".bar");
-    this.startScreen = document.querySelector(".startScreen");
-    this.gameMessage = document.querySelector(".gameMessage");
+    constructor() {
+        this.gameArea = document.querySelector(".gameArea");
+        this.scoreDisplay = document.querySelector(".score");
+        this.bar = document.querySelector(".bar");
+        this.startScreen = document.querySelector(".startScreen");
+        this.gameMessage = document.querySelector(".gameMessage");
 
+        // Game state
+        this.player = {
+            speed: 40,
+            score: 0,
+            highScore: localStorage.getItem("highScore") || 0,
+            inplay: false,
+            pipeCount: 0
+        };
 
-    // Game state
-    this.player = {
-        speed: 40,
-        score: 0,
-        highScore: localStorage.getItem("highScore") || 0,
-        inplay: false,
-        pipeCount: 0,
-    };
+        // Audio for background music
+        this.backgroundMusic = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3");
+        this.backgroundMusic.loop = true;
+        this.backgroundMusic.volume = 0.3;
 
-    // Audio for background music
-    this.backgroundMusic = new Audio("/audio/background.mp3"); // Replace with your audio file
-    this.backgroundMusic.loop = true;
-    this.backgroundMusic.volume = 0.3; // Adjust volume
+        // Bind event listeners
+        this.startScreen.addEventListener("click", () => this.start());
+        this.gameMessage.addEventListener("click", () => this.start());
+        document.addEventListener("keydown", (e) => this.pressOn(e));
+        document.addEventListener("keyup", (e) => this.pressOff(e));
 
-    // Bind event listeners
-    this.startScreen.addEventListener("click", () => this.start());
-    this.gameMessage.addEventListener("click", () => this.start());
-    document.addEventListener("keydown", (e) => this.pressOn(e));
-    document.addEventListener("keyup", (e) => this.pressOff(e));
+        // Keyboard state
+        this.keys = {};
 
-
-    // keyboard state
-    this.keys = {};
-
-    // game objects
-    this.bird = null;
-    this.pipes = [];
-   
-  }
-  start() {
-    this.player.score = 0;
-    this.player.inplay = true;
-    this.player.pipeCount = 0;
-    this.gameArea.innerHTML = "";
-    this.gameArea.style.width = "100%";
-    this.gameArea.style.background = "rgb(165, 121, 231)";
-    this.gameMessage.classList.add("hide");
-    this.startScreen.classList.add("hide");
-    this.scoreDisplay.classList.remove("hide");
-    this.bar.classList.remove("hide");
-
-    // Initialize the bird
-    this.bird = new Bird(this.gameArea, this.player.speed);
-
-    // Generate initial pipes
-    const spacing = 400;
-    const numberOfPipes = Math.floor(this.gameArea.offsetWidth / spacing);
-    for (let i = 0; i < numberOfPipes; i++) {
-      this.pipes.push(...this.buildPipes(this.player.pipeCount * spacing));
+        // Game objects
+        this.bird = null;
+        this.pipes = [];
     }
 
-    // Start background music
-    this.backgroundMusic.play().catch(e => console.error("Audio playback failed:", e));
+    start() {
+        // Reset game state
+        this.player.score = 0;
+        this.player.inplay = true;
+        this.player.pipeCount = 0;
+        this.gameArea.innerHTML = "";
+        this.gameArea.style.width = "100%";
+        this.gameArea.style.background = "rgb(165, 121, 231)";
+        this.gameMessage.classList.add("hide");
+        this.startScreen.classList.add("hide");
+        this.scoreDisplay.classList.remove("hide");
+        this.bar.classList.remove("hide");
 
-    // Start game loop
-    this.update();
+        // Initialize bird
+        this.bird = new Bird(this.gameArea, this.player.speed);
 
-  }
-  buildPipes(startPos) {
-    const totalHeight = this.gameArea.offsetHeight;
-    const totalWidth = this.gameArea.offsetWidth;
-    this.player.pipeCount++;
+        // Generate initial pipes
+        const spacing = 400;
+        const numberOfPipes = Math.floor(this.gameArea.offsetWidth / spacing);
+        for (let x = 0; x < numberOfPipes; x++) {
+            this.pipes.push(...this.buildPipes(this.player.pipeCount * spacing));
+        }
+
+        // Start background music
+        this.backgroundMusic.play().catch(e => console.error("Audio playback failed:", e));
+
+        // Start game loop
+        this.update();
+    }
+
+    buildPipes(startPos) {
+        const totalHeight = this.gameArea.offsetHeight;
+        const totalWidth = this.gameArea.offsetWidth;
+        this.player.pipeCount++;
         
-    const pipe1 = new Pipe(this.gameArea, this.player.pipeCount, startPos + totalWidth, true, totalHeight);
-    const pipeSpace = Math.floor(Math.random() * 100) + 100;
-    const pipe2 = new Pipe(this.gameArea, this.player.pipeCount, startPos + totalWidth, false, totalHeight, pipe1.height, pipeSpace);
+        const pipe1 = new Pipe(this.gameArea, this.player.pipeCount, startPos + totalWidth, true, totalHeight);
+        const pipeSpace = Math.floor(Math.random() * 200) + 100;
+        const pipe2 = new Pipe(this.gameArea, this.player.pipeCount, startPos + totalWidth, false, totalHeight, pipe1.height, pipeSpace);
         
-    return [pipe1, pipe2];
-  }
-  update() {}
+        return [pipe1, pipe2];
+    }
 
-  movePipes() {}
+    update() {
+        if (!this.player.inplay) return;
 
-  gameOver() {
-    this.player.inplay = false;
-    this.backgroundMusic.pause();
-    this.gameMessage.classList.remove("hide");
-    this.gameMessage.innerHTML = `Game Over! Your score: ${this.player.score}`;
-  }
+        this.bird.update(this.keys, this.gameArea.offsetWidth, this.gameArea.offsetHeight);
+        this.movePipes();
+        this.scoreDisplay.innerText = `Score: ${this.player.score} | High Score: ${this.player.highScore}`;
 
-  pressOn(e) {
+        if (this.bird.y > this.gameArea.offsetHeight) {
+            this.gameOver();
+        }
+        window.requestAnimationFrame(() => this.update());
+    }
+
+    movePipes() {
+        let counter = 0;
+        this.pipes = this.pipes.filter(pipe => {
+            pipe.update(this.player.speed);
+
+            // Check collision
+            if (pipe.checkCollision(this.bird.element)) {
+                this.gameOver();
+                return false;
+            }
+
+            // Update score when passing pipes
+            if (!pipe.passed && pipe.x + pipe.element.offsetWidth < this.bird.x) {
+                pipe.passed = true;
+                if (pipe.isTop) {
+                    this.player.score += Math.round(Math.random() * 10 + 100);
+                    if (this.player.score > this.player.highScore) {
+                        this.player.highScore = this.player.score;
+                        localStorage.setItem("highScore", this.player.highScore);
+                    }
+                }
+            }
+
+            // Remove pipes that are off-screen
+            if (pipe.x < -pipe.element.offsetWidth) {
+                pipe.element.remove();
+                counter++;
+                return false;
+            }
+            return true;
+        });
+
+        // Generate new pipes
+        for (let x = 0; x < counter / 4; x++) {
+            this.pipes.push(...this.buildPipes(0));
+        }
+    }
+
+    gameOver() {
+        this.player.inplay = false;
+        this.backgroundMusic.pause();
+        this.backgroundMusic.currentTime = 0; // Reset music
+        this.gameMessage.classList.remove("hide");
+        this.bird.element.style.position = "absolute";
+        this.bird.element.style.top = "40vh";
+        this.bird.element.style.left = "50vw";
+        this.bird.element.style.transform = "translateX(-50%) rotate(180deg) scale(1.6)";
+        this.gameMessage.innerHTML = `Birdy scored ${this.player.score} points<br>High Score: ${this.player.highScore}<br>Click to start again`;
+    }
+
+    pressOn(e) {
         e.preventDefault();
         this.keys[e.code] = true;
-      }
+    }
 
-  pressOff(e) {
+    pressOff(e) {
         e.preventDefault();
         this.keys[e.code] = false;
-      }
-
+    }
 }
 
 class Bird {
@@ -104,13 +155,46 @@ class Bird {
         this.speed = speed;
         this.element = document.createElement("div");
         this.element.classList.add("bird");
-        this.wing = document.createElement("div");
+        this.wing = document.createElement("span");
         this.wing.classList.add("wing");
-        this.wing.pos = 24
+        this.wing.pos = 24;
+        this.wing.style.top = `${this.wing.pos}px`;
+        this.element.appendChild(this.wing);
+        gameArea.appendChild(this.element);
+        this.x = this.element.offsetLeft;
+        this.y = this.element.offsetTop;
     }
-    update() {}
-}
 
+    update(keys, maxWidth, maxHeight) {
+        let move = false;
+        if (keys.ArrowLeft && this.x > 20) {
+            this.x -= this.speed;
+            move = true;
+        }
+        if (keys.ArrowRight && this.x < maxWidth - 100) {
+            this.x += this.speed;
+            move = true;
+        }
+        if ((keys.ArrowUp || keys.Space) && this.y > 40) {
+            this.y -= this.speed / 2;
+            move = true;
+        }
+        if (keys.ArrowDown && this.y < maxHeight - 60) {
+            this.y += this.speed / 2;
+            move = true;
+        }
+        if (move) {
+            this.wing.pos = this.wing.pos === 24 ? 30 : 24;
+            this.wing.style.top = `${this.wing.pos}px`;
+        }
+        // Apply gravity
+        this.y += this.speed * 0.02;
+
+        // Update position
+        this.element.style.top = `${this.y}px`;
+        this.element.style.left = `${this.x}px`;
+    }
+}
 class Pipe {
     constructor(gameArea, id, startX, isTop, totalHeight, topHeight = 0, pipeSpace = 0) {
         this.element = document.createElement("div");
@@ -133,13 +217,22 @@ class Pipe {
         }
         gameArea.appendChild(this.element);
     }
-    update() {}
 
-    checkCollision(){}
+    update(speed) {
+        this.x -= speed / 10;
+        this.element.style.left = `${this.x}px`;
+    }
 
+    checkCollision(bird) {
+        const birdRect = bird.getBoundingClientRect();
+        const pipeRect = this.element.getBoundingClientRect();
+        return !(
+            birdRect.top > pipeRect.bottom ||
+            birdRect.bottom < pipeRect.top ||
+            birdRect.left > pipeRect.right ||
+            birdRect.right < pipeRect.left
+        );
+    }
 }
 
-// Initialize game
 const game = new Game();
-console.log(game);
-
