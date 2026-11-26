@@ -4,11 +4,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bird Game</title>
-    <link rel="stylesheet" href="css/style.css">
-    <!-- <script src="javascript/script.js" defer></script> -->
-    <!-- <script src="javascript/game.js" defer></script> -->
-    <script src="javascript/birdyGame.js" defer></script>
+    <title>High Tech Programming</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Azeret+Mono:ital,wght@0,100..900;1,100..900&display=swap")
+        /* Whearas disregard of human rights for the country's citizen and unfair favourism for foreigners have lead to */;
+        * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        }
+
+        body {
+        font-family: "Azeret Mono";
+        min-height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+        background: #008080;
+        background-image: linear-gradient(
+            to right,
+            #f0f8ff80 1px,
+            transparent 2px
+            ),
+            linear-gradient(to top, #f0f8ff80 1px, transparent 1px);
+        background-size: 42px 42px;
+        background-position: center;
+        }
+
+        .hide {
+        display: none;
+        }
+
+        .gameArea {
+        background: #008b8b8b;
+        width: 98vw;
+        min-height: 84vh;
+        margin: 5vh auto;
+        transition: all 1.2s ease;
+        border-radius: 5px;
+        }
+        .bar {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        background: linear-gradient(45deg, #008080, #3748c4);
+        padding: 10px;
+        color: white;
+        text-align: left;
+        min-height: 80px;
+        font-size: 1.8rem;
+        }
+
+        .score {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        z-index: 100;
+        background-color: #000000;
+        padding: 10px;
+        color: #ffffff;
+        text-align: center;
+        min-height: 40px;
+        font-size: 1.8rem;
+        font-weight: 900;
+        }
+
+        .startScreen {
+        font-family: "fantasy";
+        font-weight: 800;
+        position: absolute;
+        background: rgb(165, 121, 231);
+        background: linear-gradient(45deg, #008080, #eb14ff);
+        left: 25%;
+        top: 200px;
+        color: black;
+        width: 50%;
+        padding: 20px;
+        border: 3px solid rgba(0, 0, 0, 0.8);
+        border-radius: 6px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 10px 70px rgba(255, 255, 255, 0.5);
+        border-radius: 30px;
+        transition: all 0.8s ease-in-out;
+        }
+        .startScreen:hover {
+        background: linear-gradient(45deg, #eb14ff, #008080);
+        }
+
+        .gameMessage {
+        position: absolute;
+        padding: 6px 0;
+        top: 5vh;
+        left: 50%;
+        text-align: center;
+        left: 20%;
+        width: 60%;
+        z-index: 100;
+        font-size: 1.2rem;
+        color: #ffffff;
+        background: #00000033;
+        backdrop-filter: blur(40px);
+        cursor: pointer;
+        border-radius: 4px;
+        border: 2px solid #ffffffcc;
+        }
+
+        .bird {
+        z-index: 100;
+        position: absolute;
+        top: 100px;
+        left: 50px;
+        width: 120px;
+        height: 96px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-20 -10 400 400'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23E8F5E9'/%3E%3Cstop offset='40%25' stop-color='%23C8E6C9'/%3E%3Cstop offset='100%25' stop-color='%234CAF50'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M366.314,97.749c-0.129-1.144-1.544-1.144-2.389-1.144c-6.758,0-37.499,4.942-62.82,13.081c-1.638,0.527-2.923,0.783-3.928,0.783c-1.961,0-2.722-0.928-4.254-3.029c-1.848-2.533-4.379-6.001-11.174-8.914c-2.804-1.202-6.057-1.812-9.667-1.812c-14.221,0-32.199,9.312-42.749,22.142c-0.066,0.08-0.103,0.096-0.107,0.096c-0.913,0-4.089-3.564-9.577-17.062c-4.013-9.87-8.136-22.368-10.504-31.842c-3.553-14.212-13.878-34.195-20.71-47.417c-2.915-5.642-5.218-10.098-5.797-11.836c-0.447-1.339-1.15-2.019-2.091-2.019c-0.604,0-1.184,0.3-1.773,0.917c-6.658,6.983-20.269,65.253-19.417,83.132c0.699,14.682,12.291,24.61,17.861,29.381c0.659,0.564,1.363,1.167,1.911,1.67c-2.964-1.06-9.171-6.137-17.406-12.873c-11.881-9.718-29.836-24.403-54.152-40.453c-34.064-22.484-55.885-44.77-68.922-58.084C29.964,3.599,26.338,0,23.791,0c-0.605,0-1.707,0.227-2.278,1.75c-2.924,7.798,0.754,88.419,37.074,132.002c20.279,24.335,46.136,36.829,63.246,45.097c9.859,4.764,17.647,8.527,18.851,12.058c0.273,0.803,0.203,1.573-0.223,2.425c-1.619,3.238-4.439,7.193-8.011,12.202c-9.829,13.783-24.682,34.613-35.555,69.335c-4.886,15.601-55.963,70.253-69.247,83.537c-0.648,0.648-15.847,15.917-14.06,20.229c0.142,0.344,0.613,1.143,1.908,1.143c3.176,0,11.554-5.442,24.902-16.195c17.47-14.073,29.399-25.848,38.11-34.452c8.477-8.374,13.784-13.596,17.427-14.161c-0.333,1.784-1.385,6.367-4.576,17.926c-0.077,0.279-0.238,0.938,0.127,1.418l0.355,0.576h0.495c0.001,0,0.002,0,0.003,0c0.773,0,1.172-0.618,4.53-4.786c10.244-12.714,41.417-51.561,84.722-60.067c25.376-4.985,56.886-28.519,68.008-63.854c16.822-53.439,30.902-87.056,105.176-104.081C366.502,99.413,366.428,98.751,366.314,97.749z' fill='url(%23g)' stroke='%232E7D32' stroke-width='4'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        }
+
+        .pipe {
+        width: 5%;
+        position: absolute;
+        text-align: center;
+        color: yellow;
+        font-size: 2rem;
+        font-weight: bold;
+        padding-top: 8px;
+        text-shadow: 1px 0 0 rgb(0,0,0,0.5);
+        }
+    </style>
 </head>
 
 <body>
@@ -19,7 +143,248 @@
         <span class="gameMessage hide"></span>
         <div class="gameArea"></div>
     </div>
+    <script>
+        class Game {
+            constructor() {
+                this.gameArea = document.querySelector(".gameArea");
+                this.scoreDisplay = document.querySelector(".score");
+                this.bar = document.querySelector(".bar");
+                this.startScreen = document.querySelector(".startScreen");
+                this.gameMessage = document.querySelector(".gameMessage");
 
+                // Game state
+                this.player = {
+                    speed: 40,
+                    score: 0,
+                    highScore: localStorage.getItem("highScore") || 0,
+                    inplay: false,
+                    pipeCount: 0
+                };
+
+                // Define spacing as a class property
+                this.spacing = 400;
+
+                // Audio for background music
+                this.backgroundMusic = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3");
+                this.backgroundMusic.loop = true;
+                this.backgroundMusic.volume = 0.3;
+
+                // Bind event listeners
+                this.startScreen.addEventListener("click", () => this.start());
+                this.gameMessage.addEventListener("click", () => this.start());
+                document.addEventListener("keydown", (e) => this.pressOn(e));
+                document.addEventListener("keyup", (e) => this.pressOff(e));
+
+                // Keyboard state
+                this.keys = {};
+
+                // Game objects
+                this.bird = null;
+                this.pipes = [];
+            }
+
+            start() {
+                // Reset game state
+                this.player.score = 0;
+                this.player.inplay = true;
+                this.player.pipeCount = 0;
+                this.gameArea.innerHTML = "";
+                this.pipes = []; // Clear pipes to prevent jamming on restart
+                this.gameArea.style.width = "100%";
+                this.gameArea.style.background = "linear-gradient(25deg, #ABE8A9, #A579E7 )";
+                this.gameMessage.classList.add("hide");
+                this.startScreen.classList.add("hide");
+                this.scoreDisplay.classList.remove("hide");
+                this.bar.classList.remove("hide");
+
+                // Initialize bird
+                this.bird = new Bird(this.gameArea, this.player.speed);
+
+                // Generate initial pipes
+                const numberOfPipes = Math.floor(this.gameArea.offsetWidth / this.spacing);
+                for (let x = 0; x < numberOfPipes; x++) {
+                    this.pipes.push(...this.buildPipes(this.player.pipeCount * this.spacing));
+                }
+
+                // Start background music
+                this.backgroundMusic.play().catch(e => console.error("Audio playback failed:", e));
+
+                // Start game loop
+                this.update();
+            }
+
+            buildPipes(startPos) {
+                const totalHeight = this.gameArea.offsetHeight;
+                const totalWidth = this.gameArea.offsetWidth;
+                this.player.pipeCount++;
+
+                const pipe1 = new Pipe(this.gameArea, this.player.pipeCount, startPos + totalWidth, true, totalHeight);
+                const pipeSpace = Math.floor(Math.random() * 200) + 100;
+                const pipe2 = new Pipe(this.gameArea, this.player.pipeCount, startPos + totalWidth, false, totalHeight, pipe1.height, pipeSpace);
+
+                return [pipe1, pipe2];
+            }
+
+            update() {
+                if (!this.player.inplay) return;
+
+                this.bird.update(this.keys, this.gameArea.offsetWidth, this.gameArea.offsetHeight);
+                this.movePipes();
+                this.scoreDisplay.innerText = `Score: ${this.player.score} | High Score: ${this.player.highScore}`;
+
+                if (this.bird.y > this.gameArea.offsetHeight) {
+                    this.gameOver();
+                }
+                window.requestAnimationFrame(() => this.update());
+            }
+
+            movePipes() {
+                let counter = 0;
+                this.pipes = this.pipes.filter(pipe => {
+                    pipe.update(this.player.speed);
+
+                    // Check collision
+                    if (pipe.checkCollision(this.bird.element)) {
+                        this.gameOver();
+                        return false;
+                    }
+
+                    // Update score when passing pipes
+                    if (!pipe.passed && pipe.x + pipe.element.offsetWidth < this.bird.x) {
+                        pipe.passed = true;
+                        if (pipe.isTop) {
+                            this.player.score += Math.round(Math.random() * 10 + 100);
+                            if (this.player.score > this.player.highScore) {
+                                this.player.highScore = this.player.score;
+                                localStorage.setItem("highScore", this.player.highScore);
+                            }
+                        }
+                    }
+
+                    // Remove pipes that are off-screen
+                    if (pipe.x < -pipe.element.offsetWidth) {
+                        pipe.element.remove();
+                        counter++;
+                        return false;
+                    }
+                    return true;
+                });
+
+                // Generate new pipes
+                const pairsToAdd = Math.floor(counter / 2);
+                for (let x = 0; x < pairsToAdd; x++) {
+                    this.pipes.push(...this.buildPipes(x * this.spacing));
+                }
+            }
+
+            gameOver() {
+                this.player.inplay = false;
+                this.backgroundMusic.pause();
+                this.backgroundMusic.currentTime = 0; // Reset music
+                this.gameMessage.classList.remove("hide");
+                this.bird.element.style.position = "absolute";
+                this.bird.element.style.top = "40vh";
+                this.bird.element.style.left = "50vw";
+                this.bird.element.style.transform = "translateX(-50%) rotate(180deg) scale(1.6)";
+                this.gameMessage.innerHTML = `Birdy scored ${this.player.score} points<br>High Score: ${this.player.highScore}<br>Click to start again`;
+            }
+
+            pressOn(e) {
+                e.preventDefault();
+                this.keys[e.code] = true;
+            }
+
+            pressOff(e) {
+                e.preventDefault();
+                this.keys[e.code] = false;
+            }
+        }
+
+        class Bird {
+            constructor(gameArea, speed) {
+                this.speed = speed;
+                this.element = document.createElement("div");
+                this.element.classList.add("bird");
+                this.wing = document.createElement("span");
+                this.wing.classList.add("wing");
+                this.wing.pos = 24;
+                this.wing.style.top = `${this.wing.pos}px`;
+                this.element.appendChild(this.wing);
+                gameArea.appendChild(this.element);
+                this.x = this.element.offsetLeft;
+                this.y = this.element.offsetTop;
+            }
+
+            update(keys, maxWidth, maxHeight) {
+                let move = false;
+                if (keys.ArrowLeft && this.x > 20) {
+                    this.x -= this.speed;
+                    move = true;
+                }
+                if (keys.ArrowRight && this.x < maxWidth - 100) {
+                    this.x += this.speed;
+                    move = true;
+                }
+                if ((keys.ArrowUp || keys.Space) && this.y > 40) {
+                    this.y -= this.speed / 2;
+                    move = true;
+                }
+                if (keys.ArrowDown && this.y < maxHeight - 60) {
+                    this.y += this.speed / 2;
+                    move = true;
+                }
+                if (move) {
+                    this.wing.pos = this.wing.pos === 24 ? 30 : 24;
+                    this.wing.style.top = `${this.wing.pos}px`;
+                }
+                // Apply gravity
+                this.y += this.speed * 0.02;
+
+                // Update position
+                this.element.style.top = `${this.y}px`;
+                this.element.style.left = `${this.x}px`;
+            }
+        }
+        class Pipe {
+            constructor(gameArea, id, startX, isTop, totalHeight, topHeight = 0, pipeSpace = 0) {
+                this.element = document.createElement("div");
+                this.element.classList.add("pipe");
+                this.element.innerHTML = id;
+                this.isTop = isTop;
+                this.passed = false;
+                this.x = startX;
+                this.element.style.left = `${startX}px`;
+                if (isTop) {
+                    this.height = Math.floor(Math.random() * 200) + 100;
+                    this.element.style.height = `${this.height}px`;
+                    this.element.style.top = "0px";
+                    this.element.style.background = "darkorange";
+                } else {
+                    this.height = totalHeight - topHeight - pipeSpace;
+                    this.element.style.height = `${this.height}px`;
+                    this.element.style.bottom = "0px";
+                    this.element.style.background = "springgreen";
+                }
+                gameArea.appendChild(this.element);
+            }
+
+            update(speed) {
+                this.x -= speed / 10;
+                this.element.style.left = `${this.x}px`;
+            }
+
+            checkCollision(bird) {
+                const birdRect = bird.getBoundingClientRect();
+                const pipeRect = this.element.getBoundingClientRect();
+                return !(
+                    birdRect.top > pipeRect.bottom ||
+                    birdRect.bottom < pipeRect.top ||
+                    birdRect.left > pipeRect.right ||
+                    birdRect.right < pipeRect.left
+                );
+            }
+        }
+        const game = new Game();
+    </script>
 </body>
-
 </html>
