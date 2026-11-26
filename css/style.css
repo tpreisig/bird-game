@@ -116,17 +116,6 @@ body {
   background-repeat: no-repeat;
 }
 
-.wing {
-  position: absolute;
-  top: 80px;
-  left: 32px;
-  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(255, 217, 0, 0.4));
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-  width: 40px;
-  height: 6px;
-  border-radius: 5px;
-}
-
 .pipe {
   width: 5%;
   position: absolute;
